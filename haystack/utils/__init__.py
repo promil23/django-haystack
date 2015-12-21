@@ -38,6 +38,12 @@ def default_get_identifier(obj_or_string):
                        obj_or_string._get_pk_val())
 
 
+def bct_get_identifier(obj):
+    if hasattr(obj, 'language_code'):
+        return default_get_identifier(obj) + '.' + obj.language_code
+    else:
+        return default_get_identifier(obj)
+
 def _lookup_identifier_method():
     """
     If the user has set HAYSTACK_IDENTIFIER_METHOD, import it and return the method uncalled.
@@ -50,6 +56,7 @@ def _lookup_identifier_method():
     if not hasattr(settings, 'HAYSTACK_IDENTIFIER_METHOD'):
         return default_get_identifier
 
+    '''
     module_path, method_name = settings.HAYSTACK_IDENTIFIER_METHOD.rsplit(".", 1)
 
     try:
@@ -58,6 +65,8 @@ def _lookup_identifier_method():
         raise ImportError(u"Unable to import module '%s' provided for HAYSTACK_IDENTIFIER_METHOD." % module_path)
 
     identifier_method = getattr(module, method_name, None)
+    '''
+    identifier_method = bct_get_identifier
 
     if not identifier_method:
         raise AttributeError(
